@@ -16,29 +16,14 @@ public class OrderDto {
     @Schema(description = "User info")
     UserDto user;
 
-//    @Schema(description = "Products", example = "14")
-//    List<ProductCartInfoDto> products;
+    @Schema(description = "Status of order", example = "delivered")
+    String orderStatus;
+    @Schema(description = "Status of payment", example = "paid")
+    String payment_status;
 
-    @Schema(description = "Description of the product", example = "Latest iPhone model")
-    String description;
-    @Schema(description = "Price of the product", example = "1500.0")
-    BigDecimal productPrice;
-    @Schema(description = "Quantity of the product", example = "24")
-    int productQuantity;
+    @Schema(description = "Status of payment method", example = "paypal")
+    String paymentMethod;
 
-
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItems;
-    private BigDecimal totalAmount;
-    @ManyToOne
-    @JoinColumn(name = "order_status_id")
-    private OrderStatus orderStatus;
-    @ManyToOne
-    @JoinColumn(name = "payment_method_id")
-    private PaymentMethod paymentMethod;
-    @ManyToOne
-    @JoinColumn(name = "payment_status_id")
-    private PaymentStatus paymentStatus;
+    @Schema(description = "The date and time when the object was created", example = "2023-12-01T15:30:45")
     private LocalDateTime createData;
-
 }

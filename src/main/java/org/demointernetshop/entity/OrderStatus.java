@@ -11,8 +11,18 @@ public class OrderStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String status;
+    @Column(nullable = false, unique = true)
+    @Enumerated(value = EnumType.STRING)
+    private OrderStatuses status;
     @OneToMany(mappedBy = "orderStatus")
     private List<Order> orders;
+
+    public enum OrderStatuses {
+        PENDING,
+        PROCESSING,
+        SHIPPED,
+        DELIVERED,
+        CANCELLED
+    }
 
 }

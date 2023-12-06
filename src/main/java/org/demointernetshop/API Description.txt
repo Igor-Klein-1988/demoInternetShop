@@ -296,10 +296,10 @@ Response:
                         },
                         {}
                    ]
-    "order_status":
-    "payment_status":
-    "payment_method":
-    "create_date"
+    "order_status": "delivered"
+    "payment_status": "paid",
+    "payment_method": "paypal",
+    "create_date": "2023-12-01T15:30:45"
     "user":  {
                "id": 1
                "username": "Igor123"
