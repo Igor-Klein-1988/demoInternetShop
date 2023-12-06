@@ -33,6 +33,12 @@
        {}
    ]
 
+       Method: GET
+        URL: /products/category
+        @GetMapping(/products/category)
+        public List<СategoryDTO> getCategories()
+
+
 
 
    - передать товары по категории
@@ -73,16 +79,21 @@
      {}
    ]
 
+     Method: GET
+        URL: /products/manufacturer
+        @GetMapping(/products/manufacturer)
+        public List<ManufacturerDto> getManufacturers()
+
+
 
  - передать товары по категории и по производителю
  - передать товары по категории и по производителю и по цене
   Method: GET
   URL: /products/category_manufacturer_price
 
-       @GetMapping(/products/category_manufacturer_price/{category_id}/)
-       public List<ProductResponseDTO> getProducts=ByCategoryAndPrice(@PathVariable("category_id") Integer categoryId,
-                                                                      @RequestParam("manufacturer") Integer manufacturerId,
-                                                                      @RequestParam(defaultValue = "0") Double minPrice,
+       @GetMapping(/products/category/{category_id}/manufacturer/{manufacturer_id}/price)
+       public List<ProductShortResponseDto> getProducts=ByCategoryAndPrice(@PathVariable("category_id") Integer categoryId,
+                                                                      @PathVariable("manufacturer_id") Integer manufacturerId                                                                      @RequestParam(defaultValue = "0") Double minPrice,
                                                                       @RequestParam(defaultValue = "Double.MAX_VALUE") Double maxPrice) {}
 
   Request:
@@ -107,6 +118,10 @@
     "quantity":
  }
 
+      @GetMapping(/products/product_quantity/{product_id})
+        public Integer getProductQuantity(@PathVariable("product_id") Integer productId)
+
+
 
  - показать конкретный товар по id
   Method: GET
@@ -127,6 +142,11 @@
          }
 
 
+      @GetMapping(/products/{product_id})
+        public ProductDto getProduct(@PathVariable("product_id") Integer productId)
+
+
+
          =========================================================================
 
  Работа с пользователем:
@@ -135,39 +155,60 @@ Method: POST
 URL: /users/registration
 Request:
 {
-    "username":
-    "password":
+    "username":"Igor123"
+    "password": "Qwerty007!"
+    "email": "user@mail.com"
+    "phone": "+1234567890"
 }
+    @PostMapping("api/users/register")
+    public UserDto register(UserRegistrationDto request) {
+        return userService.createUser(request);
+    }
+
 Response:
 {
-  "success":
-  "message":
+  "id": 1,
+  "username": "Igor123"
+  "role": "admin"
+  "email": "user@mail.com"
+  "phone": "+1234567890"
 }
-Response:
+
  - авторизация
  Method: PUT
  URL: /users/autorisation/{user_id}
  Request:
  {
-     "username":
+     "username": "Igor123"
+     "password": "Qwerty007!"
  }
- Response:
- {
-   "success":
-   "message":
- }
+ public void authenticateUser(@RequestBody LoginRequestDto loginRequest) {
+
+
  - редактирование данных
   Method: PUT
-  URL: /users/update/{user_id}
+  URL: /users/{user_id}
   Request:
   {
-      "username":
-      "password":
+      "username": "Igor123"
+      "role": "admin"
+      "email": "user@mail.com"
+      "phone": "+1234567890"
   }
+
+      @PutMapping("/api/users/{userId}")
+      public UserDto updateUser(UserUpdateDto request, Integer userId) {
+          return userService.updateUser(userId, request);
+      }
+
+
  Response:
  {
-   "success":
-   "message":
+   "id": 1
+   "username": "Igor123"
+   "role": "admin"
+   "email": "user@mail.com"
+   "phone": "+1234567890"
  }
 
 
@@ -175,153 +216,123 @@ Response:
  Работа с заказами:
  - показать информацию по корзине пользователя
 Method: GET
-URL: /cart/{cart_id}
+URL: /carts/{cart_id}
 Request: -
+      @GetMapping(api/carts/{cart_id})
+        public CartDto getProduct(@PathVariable("cart_id") Integer cartId)
+
 Response:
 {
     "id": ,
-    "user": {
-                "id":
-                "user_name"
-            },
-    cartItems: [
+    "userId": 1,
+    products: [
                     {
-                        "id":
-                        "product":
-                        "quantity":
+                        "id": 1,
+                        "name": "iPhone 15",
+                        "price": 150.50
+                        "quantity": 2
                     },
                     {}
                ]
 }
  - внести изменения в корзину
- Method: PUT
- URL: /cart_update/{cart_id}
- Request:
- {
-     cartItems: [
-                     {
-                         "id":
-                         "product":
-                         "quantity":
-                     }
-                ]
- }
+ Method: GET
+       @GetMapping(api/carts/addProduct/{product_id})
+         public CartDto getProduct(@PathVariable("product_id") Integer productId)
+
  Response:
- {
-     "id": ,
-     "user": {
-                 "id":
-                 "user_name"
-             },
-     cartItems: [
-                     {
-                         "id":
-                         "product":
-                         "quantity":
-                     },
-                     {}
-                ]
- }
+{
+    "id": ,
+    "userId": 1,
+    products: [
+                    {
+                        "id": 1,
+                        "name": "iPhone 15",
+                        "price": 150.50
+                        "quantity": 2
+                    },
+                    {}
+               ]
+}
+
+ Method: GET
+       @GetMapping(api/carts/deleteProduct/{product_id})
+         public CartDto getProduct(@PathVariable("product_id") Integer productId)
+
+ Response:
+{
+    "id": ,
+    "userId": 1,
+    products: [
+                    {
+                        "id": 1,
+                        "name": "iPhone 15",
+                        "price": 150.50
+                        "quantity": 2
+                    },
+                    {}
+               ]
+}
+
+
  - оформить заказ (т.е. сформировать заказ и перенести туда товары из корзины, очистить корзину,
  внести изменения в количество товара на складе в зарезервированные)
-  Method: POST
-  URL: /cart_to_order/{cart_id}
-  Request:
-  {
-      cartItems: [
-                      {
-                          "id":
-                          "product":
-                          "quantity":
-                      }
-                 ]
-  }
+  Method: Get
+  URL: api/orders/registration/{cart_id}
+     @GetMapping(api/orders/registration/{cart_id})
+           public OrderDto createOrder(@PathVariable("cart_id"))
+
   Response:
-  [
+
     {
-    "product_id":
-    "product":{
-                "product_name":
-                "quantity":
-                "price":
-              }
-    "order_status":
-    "payment_status":
-    "payment_method":
-    "create_date"
-    "user": {
-             "id":
-             "user_name"
-         }
+    "id": 1,
+    "product_id": 1
+    products: [
+                        {
+                            "id": 1,
+                            "name": "iPhone 15",
+                            "price": 150.50
+                            "quantity": 2
+                        },
+                        {}
+                   ]
+    "order_status": "delivered"
+    "payment_status": "paid",
+    "payment_method": "paypal",
+    "create_date": "2023-12-01T15:30:45"
+    "user":  {
+               "id": 1
+               "username": "Igor123"
+               "role": "admin"
+               "email": "user@mail.com"
+               "phone": "+1234567890"
+             }
     },
-    {}
-  ]
+
 
  - отмена заказа (по запросу пользователя)
-Method: PUT
-URL: /order_cancel/{order_id}
-Request:-
-Response:(update cart)
- {
-     "id": ,
-     "user": {
-                 "id":
-                 "user_name"
-             },
-     cartItems: [
-                     {
-                         "id":
-                         "product":
-                         "quantity":
-                     },
-                     {}
-                ]
- }
+Method: Delete
+  URL: api/orders/{order_id}
+     @GetMapping(api/orders/{order_id})
+           public void deleteOrder(@PathVariable("order_id"))
+
+Response:-
 
  - передать список всех заказов пользователя
   Method: GET
-  URL: /orders/{user_id}
+  URL: api/users/{user_id}/orders
+       @GetMapping(api/orders/registration/{user_id})
+             public List<OrderDto> getAllOrders(@PathVariable("user_id"))
+
   Request: -
-  Response:
-    [
-      "id":
-      {
-      "product_id":
-      "product":{
-                  "product_name":
-                  "quantity":
-                  "price":
-                }
-      "order_status":
-      "payment_status":
-      "payment_method":
-      "create_date"
-      "user": {
-               "id":
-               "user_name"
-           }
-      },
-      {}
-    ]
+  Response: [{OrderDto}, {OrderDto}]
  - передать информацию о конкретном заказе
    Method: GET
-   URL: /orders/{user_id}&{order_id}
+   URL: api/orders/order_id
+        @GetMapping(api/orders/{order_id})
+              public OrderDto getOrderById(@PathVariable("order_id"))
+
    Request: -
-   Response:
-{
-"id":
-"product_id":
-"product":{
-           "product_name":
-           "quantity":
-           "price":
-         }
-"order_status":
-"payment_status":
-"payment_method":
-"create_date"
-"user": {
-        "id":
-        "user_name"
-    }
+   Response: OrderDto
+
 }
